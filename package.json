@@ -1,0 +1,19 @@
+{
+  "name": "saerp-balanca",
+  "version": "0.0.1",
+  "description": "SAERP Controle de dispositivos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "camera",
+    "dispositivos",
+    "onvif"
+  ],
+  "author": "niltong09",
+  "license": "ISC",
+  "dependencies": {
+    "node-onvif": "^0.1.7"
+  }
+}

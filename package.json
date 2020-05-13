@@ -1,10 +1,13 @@
 {
   "name": "saerp-balanca",
+  "jest": {
+    "testTimeout": 50000
+  },
   "version": "0.0.1",
   "description": "SAERP Controle de dispositivos",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "camera",
@@ -16,5 +19,8 @@
   "dependencies": {
     "crc": "^3.8.0",
     "node-onvif": "^0.1.7"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1"
   }
 }

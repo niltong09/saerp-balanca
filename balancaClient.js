@@ -11,7 +11,7 @@ function lePeso(host, port) {
 
         client.on('data', data => {
             allData += data
-            if (allData.length > 15000) {
+            if (allData.length > 10000) {
                 client.end()
             }
         })

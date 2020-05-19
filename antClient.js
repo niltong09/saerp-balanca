@@ -9,6 +9,9 @@ function connect(host, port, onReceiveTag) {
         })
 
         client.on('data', data => {
+            if (data.toString().length < 5) {
+                return;
+            }
             //console.log('data len', data.toString().length)
             if (data.length == 65) {
                 // Antena henry leitura decimal

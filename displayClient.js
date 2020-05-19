@@ -147,7 +147,7 @@ event = {
                 {
                     device: 'display_entrada',
                     action: 'MESSAGE',
-                    payload: 'AGUARDE A PESAGEM EM ANDAMENTO'
+                    payload: 'AGUARDE PESAGEM EM ANDAMENTO'
                 }
             ]
         }, {

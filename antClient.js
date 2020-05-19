@@ -17,7 +17,7 @@ function connect(host, port, onReceiveTag) {
                 console.log('matricula', splitedData[1], (splitedData[1] * 1).toString(16))
                 onReceiveTag(splitedData[1])
             } else {
-                onReceiveTag(data.toString())
+                onReceiveTag(data.toString().replace("\r", "").replace("\n", ""))
             }
         })
 

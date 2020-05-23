@@ -11,7 +11,7 @@ function lePeso(host, port) {
 
         client.on('data', data => {
             allData += data
-            if (allData.length > 10000) {
+            if (allData.length > 100) {
                 client.end()
             }
         })
@@ -45,4 +45,5 @@ function lePeso(host, port) {
     })
 }
 
+//lePeso('192.168.111.11', 4001).then(peso => console.log(peso))
 module.exports = lePeso

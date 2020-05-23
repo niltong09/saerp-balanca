@@ -12,6 +12,7 @@ function connect(host, port, onReceiveTag) {
             if (data.toString().length < 5) {
                 return;
             }
+            console.log('data received', data)
             //console.log('data len', data.toString().length)
             if (data.length == 65) {
                 // Antena henry leitura decimal
@@ -45,4 +46,13 @@ function sendComand(client, comand) {
     return client.write(dataSend)
 }
 
+/*
+const host = '192.168.111.12'
+const port = 8081
+connect(host, port, tag => {
+    console.log('Readed tag', tag)
+
+}).then(client => {
+    //sendComand(client, "00+RR+00+T]00000001]50")
+})*/
 module.exports = { connect, sendComand }

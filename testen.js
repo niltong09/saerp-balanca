@@ -2,6 +2,7 @@ const maClient = require('./maClient')
 const balancaClient = require('./balancaClient')
 const antClient = require('./antClient')
 const sleep = require('./sleep')
+const net = require('net')
 
 async function monitorAntena() {
     const ant = new antClient('192.168.111.12', 8081)
@@ -46,4 +47,26 @@ async function fluxoPesagem(tag) {
     }
 }
 
-monitorAntena()
+//monitorAntena()
+
+const mockServer = net.createServer(c => {
+    c.on('data', dt => {
+        console.log('received data', dt)
+        console.log('dt string', dt.toString())
+    })
+    c.on('end', dt => {
+        console.log('ending conn', dt)
+    })
+})
+
+mockServer.on('error', err => {
+    console.log('error on server', err)
+})
+
+mockServer.on('close', () => {
+    console.log('server finished')
+})
+
+mockServer.listen(2101, () => {
+    console.log('listening')
+})

@@ -2,6 +2,30 @@ const net = require('net')
 const sleep = require('./sleep')
 const connClient = require('./connClient')
 
+function checkArrGE(arr1, arr2, arrv) {
+    let checkArr = false
+    for (let i of arrv) {
+        checkArr = checkArr || arr1[i] >= arr2[i]
+    }
+    return checkArr
+}
+
+function checkArrE(arr1, arr2, arrv) {
+    let checkArr = false
+    for (let i of arrv) {
+        checkArr = checkArr || arr1[i] * 1 == arr2[i] * 1
+    }
+    return checkArr
+}
+
+function checkArrNE(arr1, arr2, arrv) {
+    let checkArr = false
+    for (let i of arrv) {
+        checkArr = checkArr || arr1[i] * 1 != arr2[i] * 1
+    }
+    return checkArr
+}
+
 class maClient extends connClient {
     state = new Array(16).fill('0')
     timesChanged = new Array(16).fill(0)
@@ -77,23 +101,49 @@ class maClient extends connClient {
         return new Promise(async (resolve, reject) => {
             let ntries = 0
             console.log('waiting for ', pinno)
-            let nch = self.timesChanged[pinno - 1] * 1
-            while (nch >= self.timesChanged[pinno - 1] * 1 && ntries < waittime * 2) {
-                console.log('waiting for ', pinno)
-                await sleep(500)
-                ntries++
+            if (Array.isArray(pinno)) {
+                let nch = [...self.timesChanged]
+                let pinnom = pinno.map(v => v - 1)
+                while (checkArrGE(nch, self.timesChanged, pinnom) && ntries < waittime * 2) {
+                    console.log('waiting for ', pinno)
+                    await sleep(500)
+                    ntries++
+                }
+                if (ntries >= waittime * 2 && checkArrGE(nch, self.timesChanged, pinnom)) {
+                    reject('Not passed')
+                }
+                resolve('passed')
+            } else {
+                let nch = self.timesChanged[pinno - 1] * 1
+                while (nch >= self.timesChanged[pinno - 1] * 1 && ntries < waittime * 2) {
+                    console.log('waiting for ', pinno)
+                    await sleep(500)
+                    ntries++
+                }
+                if (ntries >= waittime * 2 && nch >= self.timesChanged[pinno - 1]) {
+                    reject('Not passed')
+                }
+                resolve(self.timesChanged[pinno - 1] - nch)
             }
-            if (ntries >= waittime * 2 && nch >= self.timesChanged[pinno - 1]) {
-                reject('Not passed')
-            }
-            resolve(self.timesChanged[pinno - 1] - nch)
         })
     }
 
     async waitState(pinno, wishState) {
-        while (this.state[pinno - 1] * 1 != wishState) {
-            console.log('waiting for ', pinno, wishState)
-            await sleep(500)
+        if (Array.isArray(pinno)) {
+            const pinnom = pinno.map(v => v - 1)
+            const arrV = new Array(16).fill(0)
+            for (let i of pinnom) {
+                arrV[i] = wishState
+            }
+            while (checkArrNE(this.state, arrV, pinnom)) {
+                console.log('waiting for', pinno, wishState)
+                await sleep(500)
+            }
+        } else {
+            while (this.state[pinno - 1] * 1 != wishState) {
+                console.log('waiting for ', pinno, wishState)
+                await sleep(500)
+            }
         }
         return this
     }
@@ -102,24 +152,11 @@ class maClient extends connClient {
 const test = new maClient('192.168.0.103', 5000)
 test.monitorState().then(async () => {
     await test.execAction(1, 1)
-    let ntries = 0
-    let nch = test.timesChanged[2] * 1
-    await sleep(5000)
-    while (nch >= test.timesChanged[2] && ntries < 60) {
-        console.log('waiting')
-        await sleep(500)
-        ntries++
-    }
-    if (ntries >= 60 && nch >= test.timesChanged[2]) {
-        console.log('action failed')
-    }
-    while (test.state[2] * 1 == 0) {
-        console.log('wait unblock cancela')
-        await sleep(500)
-    }
+    await test.waitForPassing([3, 4], 30)
+    await test.waitState([3, 4], 1)
     await sleep(5000) // Waits 5 seconds then closes the cancela
     await test.execAction(2, 2)
     test.close()
-})*/
-
+})
+*/
 module.exports = maClient

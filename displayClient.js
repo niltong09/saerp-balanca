@@ -67,11 +67,12 @@ class displayClient extends connClient {
     }
 }
 
-module.exports = displayClient
+//module.exports = displayClient
 
 const dc = new displayClient("192.168.111.8", 2101)
-dc.quickMessage("TESTE").then(() => {
-    console.log('Sent message')
-    dc.disconnect()
+dc.quickMessage("TESTE").then((err) => {
+    console.log('Sent message', err)
+    setTimeout(() => dc.disconnect(), 3000)
+    //dc.disconnect()
 })
 

@@ -4,42 +4,35 @@ const antClient = require('./antClient')
 const sleep = require('./sleep')
 const net = require('net')
 
+const taglidos = []
+
+const ma = new maClient('192.168.111.10', 5000)
+ma.monitorState() // Start monitoring state
 async function monitorAntena() {
     const ant = new antClient('192.168.111.12', 8081)
     ant.startAntMonitor(tag => {
-        return fluxoPesagem(tag)
+        if (taglidos.indexOf(tag) === -1) {
+            taglidos.push(tag)
+            //return fluxoPortaria(tag)
+            return fluxoPesagem()
+        }
     })
 }
 
-async function fluxoPesagem(tag) {
-    const ma = new maClient('192.168.0.103', 5000)
-    const balanca = new balancaClient('192.168.111.11', 4001)
+async function fluxoPortaria(tag) {
+    //const balanca = new balancaClient('192.168.111.11', 4001)
     console.log('Pesando tag', tag)
     try {
-        await ma.monitorState() // Start monitoring state
         // Action cancela
-        await ma.execAction(1, 1)
+        await ma.onPin(3)
+        await ma.pulsePin(1)
         //await sleep(5000) // Wait for 5 seconds
-        await ma.waitForPassing(3, 35)
+        await ma.waitForPassing(3, 600)
         await ma.waitState(3, 1)
         await sleep(5000) // Wait for 5 seconds
         // Action cancela
-        await ma.execAction(2, 2)
-        await sleep(5000) // Wait for 5 seconds
-        // Tries to weight
-        let validPeso = await balanca.getValidPeso()
-        if (validPeso.peso < 60) {
-            throw new Error(`O peso de ${validPeso.peso} é invalido!`)
-        }
-        console.log(`got valid weight ${validPeso.peso}`)
-        // Got the weight then continues to close open and close cancela
-        await ma.execAction(1, 1)
-        //await sleep(5000) // Wait for 5 seconds
-        await ma.waitForPassing(3, 35)
-        await ma.waitState(3, 1)
-        await sleep(5000) // Wait for 5 seconds
-        // Action cancela
-        await ma.execAction(2, 2)
+        await ma.pulsePin(1)
+        await ma.offPin(3)
         ma.close()
     } catch (e) {
         ma.close()
@@ -47,8 +40,47 @@ async function fluxoPesagem(tag) {
     }
 }
 
-//monitorAntena()
+async function fluxoPesagem(tag) {
+    //const ma = new maClient('192.168.0.103', 5000)
+    const balanca = new balancaClient('192.168.111.11', 4001)
+    console.log('Pesando tag', tag)
+    try {
+        await ma.monitorState() // Start monitoring state
+        // Zera balanca
+        await ma.pulsePin(5)
+        await ma.pulsePin(6)
+        // Action cancela
+        await ma.execAction(1, 3)
+        //await sleep(5000) // Wait for 5 seconds
+        await ma.waitForPassing([1, 2], 90)
+        await ma.waitState([1, 2], 1)
+        await sleep(5000) // Wait for 5 seconds
+        // Action cancela
+        await ma.execAction(2, 4)
+        await sleep(5000) // Wait for 5 seconds
+        // Tries to weight
+        let validPeso = await balanca.getValidPeso()
+        if (validPeso.peso < 20) {
+            throw new Error(`O peso de ${validPeso.peso} é invalido!`)
+        }
+        console.log(`got valid weight ${validPeso.peso}`)
+        // Got the weight then continues to close open and close cancela
+        await ma.execAction(3, 7)
+        //await sleep(5000) // Wait for 5 seconds
+        await ma.waitForPassing([5, 6], 120)
+        await ma.waitState([5, 6], 1)
+        await sleep(5000) // Wait for 5 seconds
+        // Action cancela
+        await ma.execAction(4, 8)
+        ma.close()
+    } catch (e) {
+        ma.close()
+        console.log('error on fluxoPesagem', e)
+    }
+}
 
+monitorAntena()
+/*
 const mockServer = net.createServer(c => {
     c.on('data', dt => {
         console.log('received data', dt)
@@ -69,4 +101,4 @@ mockServer.on('close', () => {
 
 mockServer.listen(2101, () => {
     console.log('listening')
-})
+})*/

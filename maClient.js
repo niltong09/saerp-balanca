@@ -151,6 +151,9 @@ class maClient extends connClient {
 /*
 const test = new maClient('192.168.0.103', 5000)
 test.monitorState().then(async () => {
+    console.log(`${new Date()}`)
+    await test.pulsePin(1)
+    console.log(`${new Date()}`)
     await test.execAction(1, 1)
     await test.waitForPassing([3, 4], 30)
     await test.waitState([3, 4], 1)
@@ -159,4 +162,5 @@ test.monitorState().then(async () => {
     test.close()
 })
 */
+
 module.exports = maClient

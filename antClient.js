@@ -4,6 +4,16 @@ class antClient extends connClient {
 
     processingTags = []
 
+    convertDecHexWiegand(strdec) {
+        if (strdec.length < 8) {
+            return ""
+        }
+        const strnorm = strdec.substr(-8)
+        const parte1 = strnorm.substr(0, 3) * 1
+        const parte2 = strnorm.substr(-5) * 1
+        return `${parte1.toString(16)}${parte2.toString(16)}`
+    }
+
     startAntMonitor(tagCallback) {
         const self = this
         self.addReadWatcher(async tag => {
@@ -13,7 +23,7 @@ class antClient extends connClient {
                     // Tag de antena henry
                     // TODO: Descobrir como transformar provavelmente Wiegard para outro formato
                     // Dados: <79+REON+000+0]00000000000013658925]14/04/2020 10:07:07]1]0]2F
-                    const parsedTag = tag.toString().split("]")[1]
+                    const parsedTag = this.convertDecHexWiegand(tag.toString().split("]")[1])
                     if (self.processingTags.indexOf(parsedTag) == -1) {
                         self.processingTags.push(parsedTag)
                         try {

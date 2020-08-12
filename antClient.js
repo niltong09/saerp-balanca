@@ -14,7 +14,7 @@ class antClient extends connClient {
         return `${parte1.toString(16)}${parte2.toString(16)}`
     }
 
-    startAntMonitor(tagCallback) {
+    startAntMonitor(tagCallback, port = 0) {
         const self = this
         self.addReadWatcher(async tag => {
             //console.log(`tag ${tag.toString().length}`)
@@ -24,7 +24,8 @@ class antClient extends connClient {
                     // TODO: Descobrir como transformar provavelmente Wiegard para outro formato
                     // Dados: <79+REON+000+0]00000000000013658925]14/04/2020 10:07:07]1]0]2F
                     const parsedTag = this.convertDecHexWiegand(tag.toString().split("]")[1])
-                    if (self.processingTags.indexOf(parsedTag) == -1) {
+                    const antPort = tag.toString().substr(-2, 1) * 1
+                    if (self.processingTags.indexOf(parsedTag) == -1 && antPort === port) {
                         self.processingTags.push(parsedTag)
                         try {
                             console.log('teste 1')

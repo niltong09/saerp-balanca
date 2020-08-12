@@ -64,8 +64,8 @@ snapshotCamera('192.168.111.23', 'admin', 'admin').then(data => {
 })
 */
 
-const client = new cameraClient('192.168.111.23', 'admin', 'admin')
 /*
+const client = new cameraClient('192.168.111.23', 'admin', 'admin')
 client.snapshot().then(data => {
   fs.writeFileSync('teste.jpg', data, { encoding: 'binary' })
 }).catch(e => {

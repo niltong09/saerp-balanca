@@ -154,13 +154,14 @@ test.monitorState().then(async () => {
     console.log(`${new Date()}`)
     await test.pulsePin(1)
     console.log(`${new Date()}`)
+    /*
     await test.execAction(1, 1)
     await test.waitForPassing([3, 4], 30)
     await test.waitState([3, 4], 1)
     await sleep(5000) // Waits 5 seconds then closes the cancela
     await test.execAction(2, 2)
     test.close()
-})
-*/
+})*/
+
 
 module.exports = maClient

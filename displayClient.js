@@ -4,8 +4,9 @@ const connClient = require('./connClient')
 class displayClient extends connClient {
 
     async quickMessage(message) {
-        const crcMessage = this._createCrcFrame(message, 0x50, 0xAA, 0x01, 0x01, 0x01, 0x01, 0x82, 0x01, 0x01)
+        //const crcMessage = this._createCrcFrame(message, 0x50, 0xAA, 0x01, 0x01, 0x01, 0x01, 0x82, 0x01, 0x01)
         //const outQuick = this._createCrcFrame("", 0x50, 0xAA, 0x01, 0x01, 0x01, 0x01, 0x83, 0x01, 0x01)
+        const crcMessage = this._createBccFrame(message)
         console.log('sending message')
         console.dir(crcMessage)
         await this.writeData(crcMessage)
@@ -31,7 +32,7 @@ class displayClient extends connClient {
         const ETX = 0x03 // fim do texto
         const messageBytes = message.split("").map(v => v.charCodeAt(0))
         const messageLen = []
-        if (messageLen < 256) {
+        if (messageBytes.length < 256) {
             messageLen.push(0)
             messageLen.push(messageBytes.length)
         } else {
@@ -65,14 +66,45 @@ class displayClient extends connClient {
         //bufferMsg.push(crcM)
         return Buffer.from(bufferMsg)
     }
+
+    _createBccFrame(message, dest = 0x01, tempo = 0x3a) {
+        const SOH = 0x01 // inicio do frame
+        const STX = 0x02 // inicio do texto
+        const ETX = 0x03 // fim do texto
+        const messageBytes = message.substr(0, 240).split("").map(v => v.charCodeAt(0))
+        const bufferMsg = [
+            STX,
+            dest,
+            0x82, // CMD - Quick Message
+            messageBytes.length + 1,
+            tempo,
+            ...messageBytes,
+            ETX
+        ]
+        let bcc = 0
+        for (let i of bufferMsg) {
+            bcc = bcc ^ i
+            bcc = bcc << 0x1
+            if (bcc > 256) {
+                bcc = bcc % 256
+            }
+        }
+        //bufferMsg.unshift(SOH)
+        bufferMsg.push(bcc)
+        return Buffer.from(bufferMsg)
+    }
 }
 
-//module.exports = displayClient
+module.exports = displayClient
 
+/*
 const dc = new displayClient("192.168.111.8", 2101)
+
 dc.quickMessage("TESTE").then((err) => {
     console.log('Sent message', err)
     setTimeout(() => dc.disconnect(), 3000)
     //dc.disconnect()
+}).catch((err) => {
+    console.log('error on display', err)
 })
-
+*/

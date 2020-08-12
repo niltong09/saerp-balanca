@@ -28,7 +28,6 @@ class antClient extends connClient {
                     if (self.processingTags.indexOf(parsedTag) == -1 && antPort === port) {
                         self.processingTags.push(parsedTag)
                         try {
-                            console.log('teste 1')
                             await tagCallback(parsedTag)
                         } catch (e) {
                             console.log(`Error ocurred on processing the tag ${parsedTag} ${e}`)
@@ -40,7 +39,6 @@ class antClient extends connClient {
                     if (self.processingTags.indexOf(parsedTag) == -1) {
                         self.processingTags.push(parsedTag)
                         try {
-                            console.log('teste 1')
                             await tagCallback(parsedTag)
                         } catch (e) {
                             console.log(`Error ocurred on processing the tag ${parsedTag} ${e}`)

@@ -1,6 +1,12 @@
 let strdec = "00000000000023329147"
 let strtes = '99999999999999999999'
 let strarr = `${strdec * 1}`.split("").map(c => c.charCodeAt(0))
+
+// Conversao Vertti
+const parte1 = strdec.substr(-8, 3) * 1
+const parte2 = strdec.substr(-5) * 1
+console.log(`Convertido vertti ${parte1.toString(16)}${parte2.toString(16)}`)
+
 strdec = strdec * 1
 console.log(strarr)
 console.log(strarr.reduce((a, p) => a + p).toString(16))

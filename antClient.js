@@ -51,6 +51,10 @@ class antClient extends connClient {
         return this.connect()
     }
 
+    liberaTotem() {
+        return this.sendComand("00+REON+00+1]3]LIBERADO SAIDA]13")
+    }
+
     _createComandFrame(comand) {
         let eventbytes = comand.split('')
         eventbytes = eventbytes.map(v => v.charCodeAt(0))

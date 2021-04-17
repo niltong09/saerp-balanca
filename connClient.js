@@ -38,6 +38,7 @@ module.exports = class {
             `Error occurred on connect to ${self.host}:${self.port}: ${err}`
           );
         }
+        console.log("Connected");
         resolve(self);
       });
     });
@@ -83,7 +84,7 @@ module.exports = class {
   }
 
   _onReadData(data) {
-    //console.log('readed ', data.toString())
+    console.log("readed ", data.toString());
     this.readwatchers.forEach((wt) => {
       wt(data);
     });

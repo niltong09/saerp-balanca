@@ -5,6 +5,7 @@ module.exports = class {
   port = 0;
   sock = null;
   readwatchers = [];
+  disconnectwatchers = [];
   lastError = null;
 
   constructor(host, port) {
@@ -30,9 +31,15 @@ module.exports = class {
       self.sock = new net.Socket();
       self.sock.on("data", (data) => self._onReadData(data));
       self.sock.on("error", (err) => (self.lastError = err));
+      self.sock.on("close", () => self.dispatchDisconnect());
+      self.sock.on("timeout", () => {
+        self.sock.destroy();
+        self.dispatchDisconnect();
+      });
       self.sock.connect(self.port, self.host, (err) => {
         if (err) {
           self.sock = null;
+          self.dispatchDisconnect();
           console.log("error on connect", err);
           reject(
             `Error occurred on connect to ${self.host}:${self.port}: ${err}`
@@ -42,6 +49,12 @@ module.exports = class {
         resolve(self);
       });
     });
+  }
+
+  dispatchDisconnect() {
+    this.disconnectwatchers.forEach(
+      (watcher) => typeof watcher === "function" && watcher()
+    );
   }
 
   disconnect() {

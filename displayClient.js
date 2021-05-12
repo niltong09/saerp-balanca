@@ -1,16 +1,26 @@
 const crc = require("crc");
 const connClient = require("./connClient");
-const sleep = require("./sleep");
+// const sleep = require("./sleep");
 
 class displayClient extends connClient {
   async quickMessage(message, time = 15) {
     //const crcMessage = this._createCrcFrame(message, 0x50, 0xAA, 0x01, 0x01, 0x01, 0x01, 0x82, 0x01, 0x01)
     // const outQuick = this._createCrcFrame("", 0x50, 0xAA, 0x01, 0x01, 0x01, 0x01, 0x83, 0x01, 0x01)
+    if (this.blocked) {
+      this.disconnect();
+      this.blocked = false;
+    }
     const crcMessage = this._createBccFrame(message);
     console.log("sending message");
     console.dir(crcMessage);
     await this.writeData(crcMessage);
-    await sleep(time * 1000);
+    this.blocked = true;
+    const self = this;
+    setTimeout(() => {
+      if (self.blocked) {
+        self.disconnect();
+      }
+    }, time * 1000);
     // await this.writeData(this._createBccOut());
     return this;
   }

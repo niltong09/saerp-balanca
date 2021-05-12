@@ -48,6 +48,7 @@ class antClient extends connClient {
             .replace("\n", "")
             .replace("0x", "");
           if (self.processingTags.indexOf(parsedTag) == -1) {
+            console.log("Tag readed", parsedTag);
             self.processingTags.push(parsedTag);
             try {
               await tagCallback(parsedTag);

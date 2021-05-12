@@ -59,7 +59,7 @@ class maClient extends connClient {
       datas.forEach((data) => {
         if (/^2[0-9][0-9] [0-9a-fA-F]{4}/.test(data.toString())) {
           const hexPin = data.toString().split(" ")[1];
-          console.log(hexPin);
+          // console.log(hexPin);
           const pins = ("0".repeat(16) + parseInt(hexPin, 16).toString(2))
             .substr(-16)
             .split("")
@@ -71,8 +71,8 @@ class maClient extends connClient {
           if (typeof callback === "function") {
             callback(pins);
           }
-          console.log(`State updated ${pins.join(",")}`);
-          console.log(`timesChanged updated ${self.timesChanged.join(",")}`);
+          // console.log(`State updated ${pins.join(",")}`);
+          // console.log(`timesChanged updated ${self.timesChanged.join(",")}`);
         }
       });
     });

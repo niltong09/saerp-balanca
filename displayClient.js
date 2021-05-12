@@ -11,7 +11,7 @@ class displayClient extends connClient {
     console.dir(crcMessage);
     await this.writeData(crcMessage);
     await sleep(time * 1000);
-    await this.writeData(this._createBccOut());
+    // await this.writeData(this._createBccOut());
     return this;
   }
 
@@ -92,13 +92,11 @@ class displayClient extends connClient {
       .split("")
       .map((v) => v.charCodeAt(0));
     const bufferMsg = [
-      SOH,
       STX,
       dest,
       0x82, // CMD - Quick Message
-      messageBytes.length + 2,
+      messageBytes.length + 1,
       tempo,
-      0xc5,
       ...messageBytes,
       ETX,
     ];

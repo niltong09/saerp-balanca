@@ -97,7 +97,7 @@ module.exports = class {
   }
 
   _onReadData(data) {
-    console.log("readed ", data.toString());
+    // console.log("readed ", data.toString());
     this.readwatchers.forEach((wt) => {
       wt(data);
     });

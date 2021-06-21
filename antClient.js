@@ -16,7 +16,7 @@ class antClient extends connClient {
   startAntMonitor(tagCallback, port = 0) {
     const self = this;
     self.addReadWatcher(async (tag) => {
-      console.log(`tag ${tag.toString().length}`);
+      // console.log(`tag ${tag.toString().length}`);
       if (tag.toString().length > 3) {
         if (tag.length == 65) {
           // Tag de antena henry

@@ -1,19 +1,56 @@
 const crc = require("crc");
 const connClient = require("./connClient");
-// const sleep = require("./sleep");
+const sleep = require("./sleep");
 
 class displayClient extends connClient {
-  async quickMessage(message, time = 15) {
+  async quickMessage(message, time = 30) {
     //const crcMessage = this._createCrcFrame(message, 0x50, 0xAA, 0x01, 0x01, 0x01, 0x01, 0x82, 0x01, 0x01)
     // const outQuick = this._createCrcFrame("", 0x50, 0xAA, 0x01, 0x01, 0x01, 0x01, 0x83, 0x01, 0x01)
+    await this.connect();
+
+    // await this.writeData(this._createBccOut());
     if (this.blocked) {
-      this.disconnect();
+      // this.disconnect();
       this.blocked = false;
     }
-    const crcMessage = this._createBccFrame(message);
-    console.log("sending message");
-    console.dir(crcMessage);
+    const crcMessage = this._createBccFrame(
+      message,
+      0x01,
+      0x30,
+      Math.round(time / 2)
+    );
+    // console.log("sending message", crcMessage, new Date());
+    // console.dir(crcMessage);
     await this.writeData(crcMessage);
+    // await sleep(200);
+    // await this.writeData(crcMessage);
+    // await this.writeData("\n");
+    this.blocked = true;
+    const self = this;
+    await sleep(time * 1000);
+    if (this.blocked) {
+      console.log("bcc out", this._createBccOut(), new Date());
+      await this.writeData(this._createBccOut());
+      self.disconnect();
+    }
+    return this;
+  }
+
+  async enviarMensagem(mensagem, time = 15) {
+    const crcFrame = this._createCrcFrame(
+      mensagem,
+      0x50,
+      0xaa,
+      0x01,
+      0x01,
+      0x01,
+      0x01,
+      0x82,
+      0x01,
+      0x01
+    );
+    console.log("message crc", crcFrame);
+    await this.writeData(crcFrame);
     this.blocked = true;
     const self = this;
     setTimeout(() => {
@@ -21,8 +58,6 @@ class displayClient extends connClient {
         self.disconnect();
       }
     }, time * 1000);
-    // await this.writeData(this._createBccOut());
-    return this;
   }
 
   /* Default quick message params
@@ -90,24 +125,57 @@ class displayClient extends connClient {
   }
 
   _createBccOut() {
-    return Buffer.from([0x01, 0x02, 0x01, 0x83, 0x0, 0x03, 0x4e]);
+    const arrBytes = [0x02, 0x01, 0x83, 0x0, 0x03];
+    let bcc = 0;
+    for (let i of arrBytes) {
+      bcc = bcc ^ i;
+      bcc = bcc << 0x1;
+      if (bcc > 256) {
+        bcc = bcc % 256;
+      }
+    }
+    return Buffer.from([0x01, ...arrBytes, bcc]);
   }
 
-  _createBccFrame(message, dest = 0x01, tempo = 0x3a) {
+  _createBccFrame(message, dest = 0x01, tempo = 0x31, time = 2) {
     const SOH = 0x01; // inicio do frame
     const STX = 0x02; // inicio do texto
     const ETX = 0x03; // fim do texto
-    const messageBytes = message
+    const messageBytes = `${message} `
+      .padEnd(16, " ")
+      .toUpperCase()
       .substr(0, 240)
       .split("")
       .map((v) => v.charCodeAt(0));
+    messageBytes.unshift(0xc5);
+    // messageBytes.push(0xc9);
+    messageBytes.push(0xc1); // Velocidade 1
+    // messageBytes.unshift(0xc4); // Velocidade 4
+    for (let i = 0; i < time; i++) {
+      messageBytes.push(0x9c); // Pausa
+    }
+    messageBytes.push(0x9d); // Pisca
+    messageBytes.push(0x9c); // Pausa
+    messageBytes.push(0x9e); // Superposição
+    // messageBytes.unshift(0x9a); // Relogio
+    // messageBytes.unshift(0xa4); // Pontos
+    // messageBytes.unshift(0x9b); // Calendario
+    // messageBytes.unshift(0xa5); // Abre janela
+    // messageBytes.unshift(0xa7); // Packman
+    // messageBytes.unshift(0xa8); // Tartaruga
+    // messageBytes.unshift(0x9f); // Roda para cima
+    // messageBytes.unshift(0xa0); // Roda para baixo
+    // messageBytes.unshift(0xa3); // Linhas
+    // messageBytes.unshift(0x83); // Desativa relé
+
     const bufferMsg = [
       STX,
       dest,
       0x82, // CMD - Quick Message
-      messageBytes.length + 1,
+      messageBytes.length + 2,
       tempo,
       ...messageBytes,
+      0x00,
       ETX,
     ];
     let bcc = 0;
@@ -118,23 +186,23 @@ class displayClient extends connClient {
         bcc = bcc % 256;
       }
     }
-    //bufferMsg.unshift(SOH)
+    bufferMsg.unshift(SOH);
     bufferMsg.push(bcc);
     return Buffer.from(bufferMsg);
   }
 }
 
-module.exports = displayClient;
-/*
-const dc = new displayClient("192.168.111.8", 2101);
+// module.exports = displayClient;
 
-dc.quickMessage("Fogo no setor 4 ")
-  .then((err) => {
-    console.log("Sent message", err);
-    setTimeout(() => dc.disconnect(), 3000);
-    //dc.disconnect()
-  })
-  .catch((err) => {
-    console.log("error on display", err);
-  });
-*/
+// const dc = new displayClient("192.168.111.9", 2101);
+
+// dc.quickMessage("Placa AAA-1923", 20)
+//   .then((err) => {
+//     console.log("Sent message", err);
+//     // setTimeout(() => dc.quickMessage("Teste 2"), 5000);
+//     setTimeout(() => dc.disconnect(), 10000);
+//     //dc.disconnect()
+//   })
+//   .catch((err) => {
+//     console.log("error on display", err);
+//   });

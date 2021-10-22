@@ -192,7 +192,7 @@ class displayClient extends connClient {
   }
 }
 
-// module.exports = displayClient;
+module.exports = displayClient;
 
 // const dc = new displayClient("192.168.111.9", 2101);
 

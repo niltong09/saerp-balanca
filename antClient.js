@@ -10,7 +10,7 @@ class antClient extends connClient {
     const strnorm = strdec.substr(-8);
     const parte1 = strnorm.substr(0, 3) * 1;
     const parte2 = strnorm.substr(-5) * 1;
-    return `${parte1.toString(16)}${parte2.toString(16)}`;
+    return `${parte1.toString(16)}${parte2.toString(16).padStart(4, "0")}`;
   }
 
   startAntMonitor(tagCallback, port = 0) {
@@ -26,7 +26,6 @@ class antClient extends connClient {
             tag.toString().split("]")[1]
           );
           //   const antPort = tag.toString().substr(-2, 1) * 1;
-          console.log("readed data", tag);
           if (self.processingTags.indexOf(parsedTag) == -1) {
             self.processingTags.push(parsedTag);
             try {
@@ -86,7 +85,7 @@ class antClient extends connClient {
   }
 }
 /*
-const ant = new antClient("192.168.111.4", 3000);
+const ant = new antClient("192.168.111.51", 3000);
 ant.startAntMonitor(async (tag) => {
   console.log(`Readed ${tag}`);
 });

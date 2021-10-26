@@ -26,6 +26,7 @@ class antClient extends connClient {
             tag.toString().split("]")[1]
           );
           //   const antPort = tag.toString().substr(-2, 1) * 1;
+          console.log("tag parsed", parsedTag, tag.toString());
           if (self.processingTags.indexOf(parsedTag) == -1) {
             self.processingTags.push(parsedTag);
             try {

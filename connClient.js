@@ -98,10 +98,8 @@ module.exports = class {
 
   _onReadData(data) {
     // console.log("readed ", data.toString());
-    console.log("read data ", this.host, this.readwatchers.length);
     let i = 0;
     for (const wt of this.readwatchers) {
-      console.log("chamado readwatchers", i);
       wt(data);
       i++;
     }

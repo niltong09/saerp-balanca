@@ -27,41 +27,41 @@ class antClient extends connClient {
           );
           //   const antPort = tag.toString().substr(-2, 1) * 1;
           console.log("tag parsed", parsedTag, tag.toString());
-          if (self.processingTags.indexOf(parsedTag) == -1) {
-            self.processingTags.push(parsedTag);
-            try {
-              await tagCallback(parsedTag);
-            } catch (e) {
-              console.log(
-                `Error ocurred on processing the tag ${parsedTag} ${e}`
-              );
-            }
-            self.processingTags.splice(
-              self.processingTags.indexOf(parsedTag),
-              1
+          // if (self.processingTags.indexOf(parsedTag) == -1) {
+          //   self.processingTags.push(parsedTag);
+          try {
+            await tagCallback(parsedTag);
+          } catch (e) {
+            console.log(
+              `Error ocurred on processing the tag ${parsedTag} ${e}`
             );
           }
+          //   self.processingTags.splice(
+          //     self.processingTags.indexOf(parsedTag),
+          //     1
+          //   );
+          // }
         } else {
           const parsedTag = tag
             .toString()
             .replace("\r", "")
             .replace("\n", "")
             .replace("0x", "");
-          if (self.processingTags.indexOf(parsedTag) == -1) {
-            console.log("Tag readed", parsedTag);
-            self.processingTags.push(parsedTag);
-            try {
-              await tagCallback(parsedTag);
-            } catch (e) {
-              console.log(
-                `Error ocurred on processing the tag ${parsedTag} ${e}`
-              );
-            }
-            self.processingTags.splice(
-              self.processingTags.indexOf(parsedTag),
-              1
+          // if (self.processingTags.indexOf(parsedTag) == -1) {
+          //   console.log("Tag readed", parsedTag);
+          //   self.processingTags.push(parsedTag);
+          try {
+            await tagCallback(parsedTag);
+          } catch (e) {
+            console.log(
+              `Error ocurred on processing the tag ${parsedTag} ${e}`
             );
           }
+          // self.processingTags.splice(
+          //   self.processingTags.indexOf(parsedTag),
+          //   1
+          // );
+          // }
         }
       }
     });

@@ -16,29 +16,33 @@ class totemClient extends connClient {
   startAntMonitor(tagCallback) {
     const self = this;
     self.addReadWatcher(async (tag) => {
-      //console.log(`tag ${tag.toString().length}`)
+      // console.log(`tag ${tag.toString().length}`);
       if (tag.toString().length > 3) {
-        if (tag.length == 65) {
+        if (/.*REON.*/.test(tag.toString())) {
           // Tag de antena henry
           // TODO: Descobrir como transformar provavelmente Wiegard para outro formato
           // Dados: <79+REON+000+0]00000000000013658925]14/04/2020 10:07:07]1]0]2F
-          const parsedTag = this.convertDecHexWiegand(
-            tag.toString().split("]")[1]
-          );
-          if (self.processingTags.indexOf(parsedTag) == -1) {
-            self.processingTags.push(parsedTag);
-            try {
-              console.log("teste 1");
-              await tagCallback(parsedTag);
-            } catch (e) {
-              console.log(
-                `Error ocurred on processing the tag ${parsedTag} ${e}`
+          if (tag.toString().split("]")[0].split("+").pop() == "0") {
+            // console.log("pedido de liberacao online");
+            // console.log("lido", tag.toString());
+            const parsedTag = this.convertDecHexWiegand(
+              tag.toString().split("]")[1]
+            );
+            if (self.processingTags.indexOf(parsedTag) == -1) {
+              self.processingTags.push(parsedTag);
+              try {
+                console.log("teste 1");
+                await tagCallback(parsedTag);
+              } catch (e) {
+                console.log(
+                  `Error ocurred on processing the tag ${parsedTag} ${e}`
+                );
+              }
+              self.processingTags.splice(
+                self.processingTags.indexOf(parsedTag),
+                1
               );
             }
-            self.processingTags.splice(
-              self.processingTags.indexOf(parsedTag),
-              1
-            );
           }
         } else {
           const parsedTag = tag
@@ -49,7 +53,7 @@ class totemClient extends connClient {
           if (self.processingTags.indexOf(parsedTag) == -1) {
             self.processingTags.push(parsedTag);
             try {
-              console.log("teste 1");
+              // console.log("teste 1");
               await tagCallback(parsedTag);
             } catch (e) {
               console.log(
@@ -68,11 +72,15 @@ class totemClient extends connClient {
   }
 
   liberaTagTotem(msg = "LIBERADO PARA SAIR") {
-    return this.sendComand(`00+REON+00+4]3]${msg}]0`);
+    return this.sendComand(`00+REON+00+1]3]${msg}]0`);
   }
 
   bloqueiaTagTotem(msg = "SAIDA BLOQUEADA") {
-    return this.sendComand(`00+REON+00+34]0]${msg}]0`);
+    console.log("sending bloqueio");
+    return this.sendComand(`00+REON+00+34]1]${msg}]13`);
+  }
+  desistencia() {
+    return this.sendComand(`00+REON+00+90]1]TESTE]13`);
   }
 
   _createComandFrame(comand) {
@@ -90,10 +98,19 @@ class totemClient extends connClient {
 }
 
 /*
-const ant = new totemClient('192.168.111.12', 8081)
-ant.startAntMonitor(tag => {
-    console.log(`Readed ${tag}`)
-})*/
+const ant = new totemClient("192.168.111.51", 3000);
+ant.startAntMonitor((tag) => {
+  console.log(`Readed ${tag}`);
+  ant.liberaTagTotem("SAIDA BLOQUEADA SOFT");
+});
+const sleep = require("./sleep");
+sleep(1000).then(async () => {
+  ant.desistencia();
+  while (true) {
+    await sleep(1000);
+  }
+});
+*/
 
 /*
 function connect(host, port, onReceiveTag) {
@@ -143,6 +160,10 @@ function sendComand(client, comand) {
 }*/
 
 /*
+<50+REON+000+0]00000000000009949090]06/12/2021 19:06:16]2]0]2@
+<57+REON+000+0]00000000000010141468]06/12/2021 19:06:26]2]0]2O
+<64+REON+000+0]00000000000009925794]06/12/2021 19:06:34]2]0]2N
+
 const host = '192.168.111.5'
 const port = 3000
 const client = new totemClient(host, port)

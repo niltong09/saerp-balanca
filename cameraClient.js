@@ -1,28 +1,27 @@
-const onvif = require('node-onvif')
-const connClient = require('./connClient')
-const fs = require('fs')
+const onvif = require("node-onvif");
+const connClient = require("./connClient");
+const fs = require("fs");
 
 class cameraClient extends connClient {
-
-  user = ''
-  pass = ''
+  user = "";
+  pass = "";
 
   constructor(host, user, pass) {
-    super(host, 0)
-    this.user = user
-    this.pass = pass
+    super(host, 0);
+    this.user = user;
+    this.pass = pass;
   }
 
   async snapshot() {
     let device = new onvif.OnvifDevice({
       xaddr: `http://${this.host}/onvif/device_service`,
       user: this.user,
-      pass: this.pass
-    })
+      pass: this.pass,
+    });
 
-    await device.init()
-    const res = await device.fetchSnapshot()
-    return res.body
+    await device.init();
+    const res = await device.fetchSnapshot();
+    return res.body;
   }
 }
 
@@ -64,12 +63,14 @@ snapshotCamera('192.168.111.23', 'admin', 'admin').then(data => {
 })
 */
 
-/*
-const client = new cameraClient('192.168.111.23', 'admin', 'admin')
-client.snapshot().then(data => {
-  fs.writeFileSync('teste.jpg', data, { encoding: 'binary' })
-}).catch(e => {
-  console.log('error', e)
-})*/
+// const client = new cameraClient("192.168.111.23", "admin", "admin");
+// client
+//   .snapshot()
+//   .then((data) => {
+//     fs.writeFileSync("teste.jpg", data, { encoding: "binary" });
+//   })
+//   .catch((e) => {
+//     console.log("error", e);
+//   });
 
-module.exports = cameraClient
+module.exports = cameraClient;

@@ -46,7 +46,7 @@ class maClient extends connClient {
     return this.writeData(`RESET ${pinno}\n`);
   }
 
-  async pulsePin(pinno, pulseSize = 500) {
+  async pulsePin(pinno, pulseSize = 1000) {
     await this.onPin(pinno);
     await sleep(pulseSize);
     await this.offPin(pinno);

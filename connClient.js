@@ -44,6 +44,8 @@ module.exports = class {
           reject(
             `Error occurred on connect to ${self.host}:${self.port}: ${err}`
           );
+        } else {
+          self.reconnectTries = 0;
         }
         console.log("Connected");
         resolve(self);

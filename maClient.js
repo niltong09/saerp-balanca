@@ -38,6 +38,10 @@ class maClient extends connClient {
     return this.writeData(`SET ${pinno}\n`);
   }
 
+  query() {
+    return this.writeData(`QUERY\n`); // Get state of the pins now
+  }
+
   offPin(pinno) {
     if (pinno < 0 || pinno > 16) {
       throw new Error(`The pin to turn on ${pinno} is invalid`);
@@ -88,8 +92,9 @@ class maClient extends connClient {
   async execAction(output, input) {
     await this.pulsePin(output);
     let ntries = 0;
-    while (this.state[input - 1] * 1 != 1 && ntries < 5) {
+    while (this.state[input - 1] * 1 != 1 && ntries < 20) {
       await sleep(500);
+      await this.query();
       ntries++;
     }
     if (ntries > 4 && this.state[input - 1] * 1 != 1) {
@@ -147,13 +152,17 @@ class maClient extends connClient {
       for (let i of pinnom) {
         arrV[i] = wishState;
       }
+      await this.query();
       while (checkArrNE(this.state, arrV, pinnom)) {
         console.log("waiting for", pinno, wishState);
+        await this.query();
         await sleep(500);
       }
     } else {
+      await this.query();
       while (this.state[pinno - 1] * 1 != wishState) {
         console.log("waiting for ", pinno, wishState);
+        await this.query();
         await sleep(500);
       }
     }

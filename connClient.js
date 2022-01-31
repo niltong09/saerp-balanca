@@ -46,7 +46,7 @@ module.exports = class {
             `Error occurred on connect to ${self.host}:${self.port}: ${err}`
           );
         } else {
-          self.dispatchConnect();
+          // self.dispatchConnect();
           self.reconnectTries = 0;
         }
         resolve(self);

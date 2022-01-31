@@ -6,6 +6,7 @@ module.exports = class {
   sock = null;
   readwatchers = [];
   disconnectwatchers = [];
+  connectwatchers = [];
   lastError = null;
 
   constructor(host, port) {
@@ -45,9 +46,9 @@ module.exports = class {
             `Error occurred on connect to ${self.host}:${self.port}: ${err}`
           );
         } else {
+          self.dispatchConnect();
           self.reconnectTries = 0;
         }
-        console.log("Connected");
         resolve(self);
       });
     });
@@ -55,6 +56,12 @@ module.exports = class {
 
   dispatchDisconnect() {
     this.disconnectwatchers.forEach(
+      (watcher) => typeof watcher === "function" && watcher()
+    );
+  }
+
+  dispatchConnect() {
+    this.connectwatchers.forEach(
       (watcher) => typeof watcher === "function" && watcher()
     );
   }

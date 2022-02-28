@@ -30,6 +30,7 @@ module.exports = class {
         return resolve(self);
       }
       self.sock = new net.Socket();
+      // self.sock.setKeepAlive(true, 5); // testar se funciona em todos os dispositivos
       self.sock.on("data", (data) => self._onReadData(data));
       self.sock.on("error", (err) => (self.lastError = err));
       self.sock.on("close", () => self.dispatchDisconnect());

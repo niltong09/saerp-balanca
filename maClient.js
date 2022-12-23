@@ -57,6 +57,7 @@ class maClient extends connClient {
   }
 
   async monitorState(callback) {
+    console.log("Monitorando MA");
     const self = this;
     await self.addReadWatcher((data) => {
       const datas = data.toString().split("\n");

@@ -41,20 +41,35 @@ class displayClient extends connClient {
       mensagem,
       0x50,
       0xaa,
-      0x01,
+      0x00,
       0x01,
       0x01,
       0x01,
       0x82,
       0x01,
+      0x01,
+      [0xaa, 0x0f, time]
+    );
+    const crcOut = this._createCrcFrame(
+      "",
+      0x50,
+      0xaa,
+      0x01,
+      0x01,
+      0x00,
+      0x01,
+      0x83,
+      0x01,
       0x01
     );
     console.log("message crc", crcFrame);
+    console.log("message crc", crcOut);
     await this.writeData(crcFrame);
     this.blocked = true;
     const self = this;
-    setTimeout(() => {
+    setTimeout(async () => {
       if (self.blocked) {
+        await this.writeData(crcOut);
         self.disconnect();
       }
     }, time * 1000);
@@ -82,19 +97,22 @@ class displayClient extends connClient {
     idDest,
     cmd,
     frame,
-    nFrames
+    nFrames,
+    arrComandos = []
   ) {
     const SOH = 0x01; // inicio do frame
     const STX = 0x02; // inicio do texto
     const ETX = 0x03; // fim do texto
     const messageBytes = message.split("").map((v) => v.charCodeAt(0));
     const messageLen = [];
-    if (messageBytes.length < 256) {
+    if (messageBytes.length + arrComandos.length < 256) {
       messageLen.push(0);
-      messageLen.push(messageBytes.length);
+      messageLen.push(messageBytes.length + arrComandos.length);
     } else {
-      messageLen.push(Math.floor(messageBytes.length / 256));
-      messageLen.push(messageBytes.length % 256);
+      messageLen.push(
+        Math.floor((messageBytes.length + arrComandos.length) / 256)
+      );
+      messageLen.push((messageBytes.length + arrComandos.length) % 256);
     }
     const bufferMsg = [
       SOH,
@@ -109,6 +127,7 @@ class displayClient extends connClient {
       frame, // Frame atual
       nFrames, // Quantidade de frames total
       ...messageLen, // Tamanho da mensagem
+      ...arrComandos,
       ...messageBytes, // A mensagem
       ETX,
     ];

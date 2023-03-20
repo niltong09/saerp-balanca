@@ -48,7 +48,7 @@ class displayClient extends connClient {
       0x82,
       0x01,
       0x01,
-      [0xaa, 0x0f, time]
+      [0xaa, 0x0f, time, 0xaa, 0x22, 0x02, 0xaa, , 0x0f, 0x02]
     );
     const crcOut = this._createCrcFrame(
       "",
@@ -103,7 +103,12 @@ class displayClient extends connClient {
     const SOH = 0x01; // inicio do frame
     const STX = 0x02; // inicio do texto
     const ETX = 0x03; // fim do texto
-    const messageBytes = message.split("").map((v) => v.charCodeAt(0));
+    const messageBytes = message
+      .padEnd(16, " ")
+      .toUpperCase()
+      .substr(0, 240)
+      .split("")
+      .map((v) => v.charCodeAt(0));
     const messageLen = [];
     if (messageBytes.length + arrComandos.length < 256) {
       messageLen.push(0);
@@ -127,8 +132,8 @@ class displayClient extends connClient {
       frame, // Frame atual
       nFrames, // Quantidade de frames total
       ...messageLen, // Tamanho da mensagem
-      ...arrComandos,
       ...messageBytes, // A mensagem
+      ...arrComandos,
       ETX,
     ];
     const crcM = crc.crc16ccitt(bufferMsg);

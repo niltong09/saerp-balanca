@@ -1,3 +1,11 @@
+const Conn = require('./datadoraClient.js')
+
+const co = new Conn('192.168.111.55', 29044);
+co.readwatchers.push((dt) => console.log('data', dt.toString()));
+const strWrite = "---\nRF:\n\tLOTE: 123456789\n\tDFab: 10/05/2022\n\tDVal: 10/10/2022\n..."
+console.log('writing', strWrite);
+co.writeData(strWrite).then(() => console.log('terminado'))
+/*
 let strdec = "00000000000023329147"
 let strtes = '99999999999999999999'
 let strarr = `${strdec * 1}`.split("").map(c => c.charCodeAt(0))
@@ -37,6 +45,7 @@ console.log(invdec.toString(16))
 invdec1 = strdec | curr_tag
 console.log(invdec1.toString(16))
 //01011000 11111110010111101 1
+*/
 /*
 for (let i = 1; i < 9999; i++) {
     const invdec = strdec & i

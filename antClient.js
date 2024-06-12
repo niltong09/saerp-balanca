@@ -1,5 +1,5 @@
 const connClient = require("./connClient");
-const net = require('net')
+//const net = require('net')
 
 class antClient extends connClient {
   processingTags = [];
@@ -30,7 +30,6 @@ class antClient extends connClient {
           }
       }
 
-      }
       if (tag.toString().length > 3) {
         if (tag.length == 65) {
           // Tag de antena henry
@@ -105,7 +104,7 @@ ant.startAntMonitor(async (tag) => {
   console.log(`Readed ${tag}`);
 });
 */
-
+/*
 function connect(host, port, onReceiveTag) {
     return new Promise((resolve, reject) => {
         const client = new net.Socket()
@@ -169,4 +168,5 @@ connect(host, port, tag => {
 }).then(client => {
     //sendComand(client, "00+RR+00+T]00000001]50")
 })
+*/
 module.exports = antClient;

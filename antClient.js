@@ -17,6 +17,7 @@ class antClient extends connClient {
 
   _onReadData(data) {
     // console.log("readed ", data.toString());
+    const self = this
     if (self.port == 4001 || self.port == 4002) {
       // leitor de cod barras usar buffer
       if (data.findIndex(v => v == 0x0a) == -1) {

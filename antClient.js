@@ -15,22 +15,34 @@ class antClient extends connClient {
     return `${parte1.toString(16)}${parte2.toString(16).padStart(4, "0")}`;
   }
 
+  _onReadData(data) {
+    // console.log("readed ", data.toString());
+    if (self.port == 4001 || self.port == 4002) {
+      // leitor de cod barras usar buffer
+      if (data.findIndex(v => v == 0x0a) == -1) {
+        console.log("Tag buffer", data, self.bufferStr)
+        self.bufferStr += data.toString()
+        return;
+      } else {
+        self.bufferStr += data.slice(0, data.findIndex(v => v == 0x0a)).toString()
+        const nextBuf = data.slice(data.findIndex(v => v == 0x0a) + 1).toString()
+        console.log("Tag sent", data, self.bufferStr)
+        for (const wt of this.readwatchers) {
+          wt(self.bufferStr + "")
+        }
+        self.bufferStr = nextBuf
+        return;
+      }
+    }
+    for (const wt of this.readwatchers) {
+      wt(data);
+    }
+  }
+
   startAntMonitor(tagCallback, port = 0) {
     const self = this;
     self.addReadWatcher(async (tag) => {
       // console.log(`tag ${tag.toString().length}`);
-      if (self.port == 4001 || self.port == 4002) {
-        // leitor de cod barras usar buffer
-        if (tag.findIndex(v => v == 0x0a) == -1) {
-          self.bufferStr += tag.toString()
-          return;
-        } else {
-          self.bufferStr += tag.slice(0, data.findIndex(v => v == 0x0a)).toString()
-          const nextBuf = tag.slice(data.findIndex(v => v == 0x0a) + 1).toString()
-          tag = self.bufferStr + ""
-          self.bufferStr = nextBuf
-        }
-      }
 
       if (tag.toString().length > 3) {
         if (tag.length == 65) {

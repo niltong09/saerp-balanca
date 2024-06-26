@@ -45,7 +45,7 @@ class antClient extends connClient {
     self.addReadWatcher(async (tag) => {
       // console.log(`tag ${tag.toString().length}`);
 
-      if (tag.toString().length > 3) {
+      if (tag.toString().length > 1) {
         if (tag.length == 65) {
           // Tag de antena henry
           // TODO: Descobrir como transformar provavelmente Wiegard para outro formato

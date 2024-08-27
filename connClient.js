@@ -38,7 +38,12 @@ module.exports = class {
         self.sock.destroy();
         self.dispatchDisconnect();
       });
-      self.sock.connect(self.port, self.host, (err) => {
+      self.sock.connect({
+        port: self.port,
+        host: self.host,
+        noDelay: true,
+        keepAlive: true,
+      }, (err) => {
         if (err) {
           self.sock = null;
           self.dispatchDisconnect();
@@ -49,8 +54,9 @@ module.exports = class {
         } else {
           self.dispatchConnect();
           self.reconnectTries = 0;
+          console.log("Connected")
+          resolve(self);
         }
-        resolve(self);
       });
     });
   }
@@ -71,21 +77,28 @@ module.exports = class {
     const self = this;
     return new Promise((resolve, reject) => {
       if (!!self.sock && self.sock.destroyed != true) {
+        console.log("disconnecting 1 ")
         try {
           self.sock.end((err) => {
+            console.log("disconnecting 2 ")
             if (err) {
               reject(err);
             }
-            self.sock.destroy(() => {
-              self.sock = null;
-              resolve(self);
-            });
+            console.log("disconnecting 3 ")
+            // self.sock.destroy(() => {
+            //   console.log("disconnecting 4 ")
+            //   self.sock = null;
+            //   resolve(self);
+            // });
+            self.sock = null;
+            resolve(self);
           }); // Send the FIN package
         } catch (e) {
           reject(e);
         }
+      } else {
+        resolve(self);
       }
-      resolve(self);
     });
   }
 

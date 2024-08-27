@@ -4,6 +4,7 @@ const connClient = require("./connClient");
 class antClient extends connClient {
   processingTags = [];
   bufferStr = ""
+  pingTimeoutSeconds = 30
 
   convertDecHexWiegand(strdec) {
     if (strdec.length < 8) {
@@ -96,6 +97,29 @@ class antClient extends connClient {
     return this.connect();
   }
 
+  connect() {
+    super.connect();
+    this.setUpReconnect();
+  }
+
+  setUpReconnect() {
+    const self = this
+    const pingDest = async () => {
+      try {
+        console.log("Ping reconnect", new Date());
+        await self.disconnect()
+        console.log("reconnecting");
+        await self.connect()
+      } catch (err) {
+        if (err) {
+          console.log("Erro ao desconectar", err)
+          self.connect();
+        }
+      }
+    }
+    setTimeout(pingDest, self.pingTimeoutSeconds * 1000)
+  }
+
   liberaTotem() {
     return this.sendComand("00+REON+00+1]3]LIBERADO SAIDA]13");
   }
@@ -186,4 +210,15 @@ connect(host, port, tag => {
   //sendComand(client, "00+RR+00+T]00000001]50")
 })
 */
-module.exports = antClient;
+const cl = new antClient("192.168.111.10", 4001);
+cl.startAntMonitor((data) => console.log("Received", data))
+const readline = require("readline")
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  terminal: false
+})
+
+rl.on("line", (line) => console.log(line))
+
+//module.exports = antClient;

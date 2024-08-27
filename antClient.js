@@ -210,15 +210,15 @@ connect(host, port, tag => {
   //sendComand(client, "00+RR+00+T]00000001]50")
 })
 */
-const cl = new antClient("192.168.111.10", 4001);
-cl.startAntMonitor((data) => console.log("Received", data))
-const readline = require("readline")
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  terminal: false
-})
+// const cl = new antClient("192.168.111.66", 4002);
+// cl.startAntMonitor((data) => console.log("Received", data))
+// const readline = require("readline")
+// const rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout,
+//   terminal: false
+// })
+//
+// rl.on("line", (line) => console.log(line))
 
-rl.on("line", (line) => console.log(line))
-
-//module.exports = antClient;
+module.exports = antClient;

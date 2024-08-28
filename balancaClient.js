@@ -75,11 +75,14 @@ class balancaClient extends connClient {
     }
     let tried = 0
     await this.connect();
+    console.log("balanca connect")
     while (this.lastPesoRead.timestamp.getTime() <= dt.getTime() && tried < 5) {
-      await sleep(500);
+      await sleep(100);
       tried++
+      console.log("balanca trying leitura", this.lastPesoRead, tried)
     }
     try {
+      console.log("balanca disconnect")
       await this.disconnect();
     } catch (e) {
       console.log("error on disconnect", e);

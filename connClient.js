@@ -8,6 +8,7 @@ module.exports = class {
   disconnectwatchers = [];
   connectwatchers = [];
   lastError = null;
+  cycling_reconnect = false;
 
   constructor(host, port) {
     this.host = host;
@@ -62,6 +63,9 @@ module.exports = class {
   }
 
   dispatchDisconnect() {
+    if (this.cycling_reconnect) {
+      return;
+    }
     this.disconnectwatchers.forEach(
       (watcher) => typeof watcher === "function" && watcher()
     );

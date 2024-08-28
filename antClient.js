@@ -107,7 +107,9 @@ class antClient extends connClient {
     const pingDest = async () => {
       try {
         console.log("Ping reconnect", new Date());
+        self.cycling_reconnect = true
         await self.disconnect()
+        self.cycling_reconnect = false
         console.log("reconnecting");
         await self.connect()
       } catch (err) {
@@ -116,6 +118,7 @@ class antClient extends connClient {
           self.connect();
         }
       }
+      self.cycling_reconnect = false
     }
     setTimeout(pingDest, self.pingTimeoutSeconds * 1000)
   }

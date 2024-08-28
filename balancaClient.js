@@ -73,9 +73,11 @@ class balancaClient extends connClient {
         timestamp: dt,
       };
     }
+    let tried = 0
     await this.connect();
-    while (this.lastPesoRead.timestamp.getTime() <= dt.getTime()) {
+    while (this.lastPesoRead.timestamp.getTime() <= dt.getTime() && tried < 5) {
       await sleep(500);
+      tried++
     }
     try {
       await this.disconnect();
@@ -94,6 +96,7 @@ class balancaClient extends connClient {
     ) {
       await sleep(500);
       peso = await this.lePeso();
+      tried++
     }
     if (peso.estavel * 1 == 0 || peso.fotocelula * 1 == 1) {
       throw new Error("Não foi possivel buscar um peso valido");

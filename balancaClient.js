@@ -77,7 +77,7 @@ class balancaClient extends connClient {
     await this.connect();
     console.log("balanca connect")
     while (this.lastPesoRead.timestamp.getTime() <= dt.getTime() && tried < 5) {
-      await sleep(100);
+      await sleep(500);
       tried++
       console.log("balanca trying leitura", this.lastPesoRead, tried)
     }
@@ -90,7 +90,7 @@ class balancaClient extends connClient {
     return this.lastPesoRead;
   }
 
-  async getValidPeso(ntries = 5) {
+  async getValidPeso(ntries = 3) {
     let peso = await this.lePeso();
     let tried = 0;
     while (

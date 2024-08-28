@@ -55,7 +55,7 @@ class balancaClient extends connClient {
           }
         } else {
           const pesosParsed = parsePeso(reading);
-          if (pesosParsed.length > 1) {
+          if (pesosParsed.length > 0) {
             self.data = "";
             self.lastPesoRead = pesosParsed.pop();
             self.lastPesoRead.timestamp = new Date();

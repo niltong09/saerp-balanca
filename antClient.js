@@ -4,7 +4,7 @@ const connClient = require("./connClient");
 class antClient extends connClient {
   processingTags = [];
   bufferStr = ""
-  pingTimeoutSeconds = 30
+  pingTimeoutSeconds = 1800
 
   convertDecHexWiegand(strdec) {
     if (strdec.length < 8) {
@@ -97,10 +97,10 @@ class antClient extends connClient {
     return this.connect();
   }
 
-  connect() {
-    super.connect();
-    this.setUpReconnect();
-  }
+  // connect() {
+  //   super.connect();
+  //   this.setUpReconnect();
+  // }
 
   setUpReconnect() {
     const self = this

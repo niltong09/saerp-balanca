@@ -3,7 +3,7 @@
   "jest": {
     "testTimeout": 50000
   },
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "SAERP Controle de dispositivos",
   "main": "index.js",
   "scripts": {

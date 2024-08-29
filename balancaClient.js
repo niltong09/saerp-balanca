@@ -90,7 +90,7 @@ class balancaClient extends connClient {
     return this.lastPesoRead;
   }
 
-  async getValidPeso(ntries = 3) {
+  async getValidPeso(ntries = 30) {
     let peso = await this.lePeso();
     let tried = 0;
     while (

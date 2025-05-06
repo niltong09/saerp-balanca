@@ -62,7 +62,7 @@ class maClient extends connClient {
     await self.addReadWatcher((data) => {
       const datas = data.toString().split("\n");
       datas.forEach((data) => {
-        if (/^2[0-9][0-9] [0-9a-fA-F]{4}/.test(data.toString())) {
+        if (/^210 [0-9a-fA-F]{4}/.test(data.toString())) {
           const hexPin = data.toString().split(" ")[1];
           // console.log(hexPin);
           const pins = ("0".repeat(16) + parseInt(hexPin, 16).toString(2))

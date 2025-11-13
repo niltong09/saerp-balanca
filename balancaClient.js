@@ -73,16 +73,16 @@ class balancaClient extends connClient {
         timestamp: dt,
       };
     }
-    let tried = 0
+    let tried = 0;
     await this.connect();
-    console.log("balanca connect")
+    console.log("balanca connect");
     while (this.lastPesoRead.timestamp.getTime() <= dt.getTime() && tried < 5) {
       await sleep(900);
-      tried++
-      console.log("balanca trying leitura", this.lastPesoRead, tried)
+      tried++;
+      console.log("balanca trying leitura", this.lastPesoRead, tried);
     }
     try {
-      console.log("balanca disconnect")
+      console.log("balanca disconnect");
       await this.disconnect();
     } catch (e) {
       console.log("error on disconnect", e);
@@ -93,15 +93,12 @@ class balancaClient extends connClient {
   async getValidPeso(ntries = 30) {
     let peso = await this.lePeso();
     let tried = 0;
-    while (
-      tried < ntries &&
-      (peso.estavel * 1 == 0 || peso.fotocelula * 1 == 1)
-    ) {
+    while (tried < ntries && peso.estavel * 1 == 0) {
       await sleep(500);
       peso = await this.lePeso();
-      tried++
+      tried++;
     }
-    if (peso.estavel * 1 == 0 || peso.fotocelula * 1 == 1) {
+    if (peso.estavel * 1 == 0) {
       throw new Error("Não foi possivel buscar um peso valido");
     }
     return peso;
